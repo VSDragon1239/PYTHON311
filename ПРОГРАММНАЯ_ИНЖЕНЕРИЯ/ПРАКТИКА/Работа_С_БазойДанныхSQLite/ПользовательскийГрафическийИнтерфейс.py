@@ -1,28 +1,37 @@
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QPushButton, QFileDialog, QMessageBox
 from PySide6.QtCore import Signal, QObject
-from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.ОбработкаНажатийМышы_И_Клавиатуры.loadUi import *
+from PySide6.QtUiTools import loadUiType
+import os
+
 from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.ОбработкаНажатийМышы_И_Клавиатуры.Функции.СозданиеОбъектаНаКнопкиМыши import \
     DrawingWidget
 
+# main_gui_path = os.path.abspath("Интерфейсы/ГрафическийИнтерфейс.ui")
+# addon_gui_path = os.path.abspath("Интерфейсы/ГрафическийИнтерфейс.ui")
+# print(loadUiType(main_gui_path))
+
+Ui_mainGUI, QMainWindow = loadUiType('ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/Интерфейсы/ГрафическийИнтерфейс.ui')
+Ui_AddonWindow1, QWidget = loadUiType("ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/Интерфейсы/ВторойГрафическийИнтерфейс.ui")
+
 
 class Communicate(QObject):
-    updateAddonWindowState = Signal(bool)
-    openAdditionalWindow = Signal(str)
+    update_addon_window_state = Signal(bool)
+    open_additional_window = Signal(str)
 
 
 class mainGUI(Ui_mainGUI, QMainWindow):
     def __init__(self):
         super(mainGUI, self).__init__()
-        self.addonWindowOpen = False
+        self.addon_window_open = False
         self.setupUi(self)
-        self.connectPushButtons()
+        self.button_connection()
 
         # Создаем объекты для обмена данными между окнами
         self.communicate = Communicate()
-        self.communicate.updateAddonWindowState.connect(self.updateAddonWindowState)
+        self.communicate.update_addon_window_state.connect(self.update_addon_window_state)
 
-    def connectPushButtons(self):
-        self.BTN01111_func.clicked.connect(self.addonWindow1Interface)
+    def button_connection(self):
+        self.BTN01111_func.clicked.connect(self.addon_window_btn)
 
     def back_page(self):
         pass
@@ -42,31 +51,30 @@ class mainGUI(Ui_mainGUI, QMainWindow):
     def random_under_title(self):
         pass
 
-    def addonWindow1Interface(self):
+    def addon_window_btn(self):
         self.ASFP = AddonWindow1()
-        self.ASFP.closed.connect(self.updateAddonWindowState)  # Подключаем сигнал к слоту
+        self.ASFP.closed.connect(self.update_addon_window_state)  # Подключаем сигнал к слоту
         self.ASFP.show()
-        self.setEnabled(self.addonWindowOpen)
-        self.addonWindowOpen = True
+        self.setEnabled(self.addon_window_open)
+        self.addon_window_open = True
         print('Второе окно 1 было активированно')
 
     def closeEvent(self, event):
-        if self.addonWindowOpen:
+        if self.addon_window_open:
+            QMessageBox.warning(self, 'Предупреждение', 'Нельзя закрыть главное окно, когда открыто второе окно!')
+            event.ignore()
+        else:
             reply = QMessageBox.question(self, 'Предупреждение',
                                          "Вы уверены, что хотите закрыть приложение?",
                                          QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
 
             if reply == QMessageBox.Yes:
                 event.accept()
-                QApplication.exit()
             else:
                 event.ignore()
-        else:
-            event.accept()
-            QApplication.exit()
 
-    def updateAddonWindowState(self):
-        self.addonWindowOpen = False
+    def update_addon_window_state(self):
+        self.addon_window_open = False
         self.setDisabled(False)
 
 

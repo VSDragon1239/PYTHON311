@@ -1,18 +1,13 @@
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QPushButton, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QPushButton, QFileDialog, QMessageBox, QFileSystemModel
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtUiTools import loadUiType
 import os
 
-main_gui_path = os.path.abspath("Интерфейсы/ГрафическийИнтерфейс.ui")
-print(loadUiType(main_gui_path))
-
-Ui_mainGUI, QMainWindow = loadUiType('Интерфейсы/ГрафическийИнтерфейс.ui')
-Ui_AddonWindow1, QWidget = loadUiType("Интерфейсы/ВторойГрафическийИнтерфейс.ui")
-
-
-class Communicate(QObject):
-    update_addon_window_state = Signal(bool)
-    open_additional_window = Signal(str)
+test_x = 1
+if test_x == -1:
+    Ui_mainGUI, QMainWindow = loadUiType('ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/ФайловаяСистема_И_ПопулярныеФорматы_Zip_And_Json/Интерфейсы/ГрафическийИнтерфейсМэйн.ui')
+else:
+    Ui_mainGUI, QMainWindow = loadUiType('Интерфейсы/ГрафическийИнтерфейсМэйн.ui')
 
 
 class mainGUI(Ui_mainGUI, QMainWindow):
@@ -20,15 +15,15 @@ class mainGUI(Ui_mainGUI, QMainWindow):
         super(mainGUI, self).__init__()
         self.addon_window_open = False
         self.setupUi(self)
+        self.selected_directory = ''
         self.button_connection()
-        self.BTN01111_func.clicked.connect(self.addon_setting_btn)
 
-        # Создаем объекты для обмена данными между окнами
-        self.communicate = Communicate()
-        self.communicate.update_addon_window_state.connect(self.update_addon_window_state)
+        self.model = QFileSystemModel()
 
     def button_connection(self):
-        pass
+        self.pushButton.clicked.connect(self.selectPath)
+        self.pushButton_2.clicked.connect(self.testing_h_r_f)
+        self.pushButton_3.clicked.connect(self.checking_size_from_path)
 
     def back_page(self):
         pass
@@ -36,8 +31,25 @@ class mainGUI(Ui_mainGUI, QMainWindow):
     def continue_page(self):
         pass
 
-    def check_path_name(self):
-        pass
+    def selectPath(self):
+        self.selected_directory = QFileDialog.getExistingDirectory(
+            None,
+            "Выберите директорию",
+            "/path/to/default/directory"  # Начальный путь (необязательно)
+        )
+
+        if self.selected_directory:
+            print("Выбранная директория:", self.selected_directory)
+            self.lineEdit.setText(self.selected_directory)
+
+            self.model.setRootPath("")
+
+            # Устанавливаем модель для treeView
+            self.treeView.setModel(self.model)
+            self.model.setRootPath(self.lineEdit.text())
+            self.treeView.setRootIndex(self.model.index(self.lineEdit.text()))
+        else:
+            print("Выбор отменен")
 
     def checker(self, lineedit_name):
         pass
@@ -45,43 +57,67 @@ class mainGUI(Ui_mainGUI, QMainWindow):
     def select_path(self):
         pass
 
-    def random_under_title(self):
-        pass
+    def human_read_format(self, size):
+        size1 = int(size)
+        X = 10
+        if self.check_size(size) == 0:
+            if size < 2 ** X:
+                return str(size) + "Б"  # Байты
+            elif size < 2 ** (X * 2):
+                return str(round((size / (2 ** X)))) + "КБ"
+            elif size < 2 ** 30:
+                return str(round(size / 2 ** (X * 2))) + "МБ"
+            elif size < 2 ** 40:
+                return str(round(size / 2 ** (X * 3))) + "ГБ"
 
-    def addon_setting_btn(self):
-        self.ASFP = AddonWindow1()
-        self.ASFP.closed.connect(self.update_addon_window_state)  # Подключаем сигнал к слоту
-        self.ASFP.show()
-        self.setEnabled(self.addon_window_open)
-        self.addon_window_open = True
-        print('Второе окно 1 было активированно')
-
-    def closeEvent(self, event):
-        if self.addon_window_open:
-            QMessageBox.warning(self, 'Предупреждение', 'Нельзя закрыть главное окно, когда открыто второе окно!')
-            event.ignore()
+    def check_size(self, size):
+        if size >= 0:
+            return 0
         else:
-            reply = QMessageBox.question(self, 'Предупреждение',
-                                         "Вы уверены, что хотите закрыть приложение?",
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+            print("Неправильный ввод!")
+            return -1
 
-            if reply == QMessageBox.Yes:
-                event.accept()
+    def testing_h_r_f(self):
+        X = self.plainTextEdit.toPlainText()
+        X = eval(X)
+
+
+        test = []
+        x = 0
+        for i in X:
+            x += 1
+            test.append(self.human_read_format(i))
+        output_string = '\n'.join(str(item) for item in test)
+        self.plainTextEdit_2.setPlainText(output_string)
+
+    # Чтение всех файлов в папке, с флажком только чтение файлов (не надо читать папки)
+    def get_files_sizes(self, path="", only_read_files=True):
+        list_files = []
+        list_files_and_folders = []
+        list_all = []
+
+        for file in os.listdir(os.chdir(path)):
+            file_and_size = {os.path.splitext(file): self.human_read_format(os.path.getsize(file))}
+            if os.path.isfile(file):
+                list_files.append(file_and_size)
+                list_files_and_folders.append(file_and_size)
             else:
-                event.ignore()
+                list_files_and_folders.append(file_and_size)
 
-    def update_addon_window_state(self):
-        self.addon_window_open = False
-        self.setDisabled(False)
+        if only_read_files:
+            for file_name in list_files:
+                for i in file_name.values():
+                    for x in file_name.keys():
+                        list_all.append([x[0], x[1], i])
+            return list_all
+        else:
+            for file_name in list_files_and_folders:
+                for i in file_name.values():
+                    for x in file_name.keys():
+                        list_all.append([x[0], x[1], i])
+            return list_all
 
-
-class AddonWindow1(Ui_AddonWindow1, QWidget):
-    closed = Signal()  # Создаем сигнал, который будет отправлен при закрытии окна
-
-    def __init__(self):
-        super(AddonWindow1, self).__init__()
-        self.setupUi(self)
-
-    def closeEvent(self, event):
-        self.closed.emit()  # Отправляем сигнал при закрытии окна
-        event.accept()
+    def checking_size_from_path(self):
+        lines = self.get_files_sizes(path=self.lineEdit.text())
+        output_string = '\n'.join('\t'.join(item) for item in lines)
+        self.plainTextEdit_3.setPlainText(output_string)
