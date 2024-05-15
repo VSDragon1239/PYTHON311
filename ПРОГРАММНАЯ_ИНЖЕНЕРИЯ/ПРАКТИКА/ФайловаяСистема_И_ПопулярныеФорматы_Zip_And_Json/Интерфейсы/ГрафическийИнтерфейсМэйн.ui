@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -169,6 +169,65 @@
     <attribute name="title">
      <string>Чтение архива</string>
     </attribute>
+    <widget class="QTreeView" name="treeView_2">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>391</width>
+       <height>381</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>20</y>
+       <width>201</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Файлы в открытой папке</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_4">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>430</y>
+       <width>301</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Узнать то что в архиве</string>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="plainTextEdit_4">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>40</y>
+       <width>301</width>
+       <height>381</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>550</x>
+       <y>20</y>
+       <width>70</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Размер</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
     <attribute name="title">
@@ -214,7 +273,6 @@
     </property>
     <property name="font">
      <font>
-      <family>Bahnschrift</family>
       <pointsize>9</pointsize>
      </font>
     </property>

@@ -1,99 +1,176 @@
-from PySide6.QtWidgets import QApplication, QVBoxLayout, QPushButton, QFileDialog, QMessageBox
-from PySide6.QtCore import Signal, QObject
+from PySide6.QtSql import QSqlDatabase, QSqlTableModel
+from PySide6.QtWidgets import QApplication, QVBoxLayout, QFileDialog, QDialog, QInputDialog, \
+    QLineEdit, QLabel, QSpinBox
 from PySide6.QtUiTools import loadUiType
 import os
+from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_БазойДанныхSQLite.Функции.СозданиеБазыДанных import ApartmentDatabase
 
-from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.ОбработкаНажатийМышы_И_Клавиатуры.Функции.СозданиеОбъектаНаКнопкиМыши import \
-    DrawingWidget
+main_gui_path = os.path.abspath("Интерфейсы/ГрафическийИнтерфейс.ui")
 
-# main_gui_path = os.path.abspath("Интерфейсы/ГрафическийИнтерфейс.ui")
-# addon_gui_path = os.path.abspath("Интерфейсы/ГрафическийИнтерфейс.ui")
-# print(loadUiType(main_gui_path))
-
-Ui_mainGUI, QMainWindow = loadUiType('ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/Интерфейсы/ГрафическийИнтерфейс.ui')
-Ui_AddonWindow1, QWidget = loadUiType("ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/Интерфейсы/ВторойГрафическийИнтерфейс.ui")
-
-
-class Communicate(QObject):
-    update_addon_window_state = Signal(bool)
-    open_additional_window = Signal(str)
+x = -1
+if x == -1:
+    Ui_mainGUI, QMainWindow = loadUiType('ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/Интерфейсы/ГрафическийИнтерфейс.ui')
+else:
+    Ui_mainGUI, QMainWindow = loadUiType(main_gui_path)
 
 
 class mainGUI(Ui_mainGUI, QMainWindow):
     def __init__(self):
         super(mainGUI, self).__init__()
-        self.addon_window_open = False
         self.setupUi(self)
         self.button_connection()
-
-        # Создаем объекты для обмена данными между окнами
-        self.communicate = Communicate()
-        self.communicate.update_addon_window_state.connect(self.update_addon_window_state)
+        self.action_connection()
+        self.label.setText('Вкусности квартиры')
+        self.db = None
+        # self.InputDialog = InputDialog()
 
     def button_connection(self):
-        self.BTN01111_func.clicked.connect(self.addon_window_btn)
-
-    def back_page(self):
         pass
 
-    def continue_page(self):
-        pass
+    def action_connection(self):
+        self.action.triggered.connect(self.open_database)
+        self.action_2.triggered.connect(self.create_database)
 
-    def check_path_name(self):
-        pass
+    def open_database(self):
+        db_file, _ = QFileDialog.getOpenFileName(self, "Open SQLite Database", "",
+                                                 "SQLite Database Files (*.sqlite *.db);;All Files (*)")
 
-    def checker(self, lineedit_name):
-        pass
+        if db_file:
+            self.db = QSqlDatabase.addDatabase('QSQLITE')
+            self.db.setDatabaseName(db_file)
+            self.visible_database()
 
-    def select_path(self):
-        pass
+    def visible_database(self):
+        if not self.db.open():
+            print("Ошибка при открытии базы данных")
 
-    def random_under_title(self):
-        pass
+        # Создайте модель данных
+        self.model = QSqlTableModel(db=self.db)
+        self.model.setTable(self.getTables()[0])
+        self.model.select()
+        self.tableView.setModel(self.model)
 
-    def addon_window_btn(self):
-        self.ASFP = AddonWindow1()
-        self.ASFP.closed.connect(self.update_addon_window_state)  # Подключаем сигнал к слоту
-        self.ASFP.show()
-        self.setEnabled(self.addon_window_open)
-        self.addon_window_open = True
-        print('Второе окно 1 было активированно')
-
-    def closeEvent(self, event):
-        if self.addon_window_open:
-            QMessageBox.warning(self, 'Предупреждение', 'Нельзя закрыть главное окно, когда открыто второе окно!')
-            event.ignore()
-        else:
-            reply = QMessageBox.question(self, 'Предупреждение',
-                                         "Вы уверены, что хотите закрыть приложение?",
-                                         QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
-
-            if reply == QMessageBox.Yes:
-                event.accept()
-            else:
-                event.ignore()
-
-    def update_addon_window_state(self):
-        self.addon_window_open = False
-        self.setDisabled(False)
+        print(self.getTables()[0])
 
 
-class AddonWindow1(Ui_AddonWindow1, QWidget):
-    closed = Signal()  # Создаем сигнал, который будет отправлен при закрытии окна
+    def getTables(self):
+        query = self.db.exec_("""
+            SELECT name FROM sqlite_master WHERE type='table';
+        """)
+        tables = []
+        while query.next():
+            tables.append(query.value(0))
+        return tables
 
-    def __init__(self):
-        super(AddonWindow1, self).__init__()
-        self.setupUi(self)
-        self.connectBTN()
+    def create_database(self):
+        path_db = QFileDialog.getExistingDirectory(self, "Open Folder для Database", "")
+        if path_db:
+            db_name, ok = QInputDialog.getText(self, 'Input Dialog', 'Введите название базы данных:')
+            if ok:
+                self.dbA = ApartmentDatabase(db_name, path_db)
+                self.dbA.create_table_items()
+                data = [
+                    ('Диван', 2020, 'Мебель', 'Гостиная'),
+                    ('Холодильник', 2018, 'Бытовая техника', 'Кухня'),
+                    ('Телевизор', 2021, 'Бытовая техника', 'Гостиная'),
+                    ('Кровать', 2019, 'Мебель', 'Спальная комната'),
+                    ('Стол', 2021, 'Мебель', 'Кухня'),
+                    ('Стул', 2022, 'Мебель', 'Кухня'),
+                    ('Шкаф', 2018, 'Мебель', 'Спальная комната'),
+                    ('Плита', 2020, 'Бытовая техника', 'Кухня'),
+                    ('Микроволновка', 2021, 'Бытовая техника', 'Кухня'),
+                    ('Комод', 2022, 'Мебель', 'Гостиная'),
+                    ('Кофеварка', 2021, 'Бытовая техника', 'Кухня'),
+                    ('Ковер', 2020, 'Мебель', 'Гостиная'),
+                    ('Пылесос', 2022, 'Бытовая техника', 'Кладовка'),
+                    ('Зеркало', 2021, 'Мебель', 'Ванная комната'),
+                ]
 
-    def connectBTN(self):
-        self.pushButton.clicked.connect(self.activatedWidget)
+                self.dbA.insert_data(data)
+                self.dbA.close()
 
-    def activatedWidget(self):
-        self.widget = DrawingWidget()
-        self.widget.show()
 
-    def closeEvent(self, event):
-        self.closed.emit()  # Отправляем сигнал при закрытии окна
-        event.accept()
+    #             # Получить количество таблиц
+    #             num_tables, ok = QInputDialog.getInt(self, 'Input Dialog', 'Введите количество таблиц:')
+    #
+    #             if ok:
+    #                 # Для каждой таблицы получить название и количество столбцов
+    #                 for i in range(num_tables):
+    #                     table_data = {}  # Инициализация словаря для данных таблицы
+    #
+    #                     table_name, ok = QInputDialog.getText(self, 'Input Dialog',
+    #                                                           f'Введите название таблицы {i + 1}:')
+    #
+    #                     if ok:
+    #                         table_data['table_name'] = table_name  # Добавить название таблицы в словарь данных таблицы
+    #
+    #                         num_columns, ok = QInputDialog.getInt(self, 'Input Dialog',
+    #                                                               f'Введите количество столбцов для таблицы {table_name}:')
+    #
+    #                         if ok:
+    #                             table_data[
+    #                                 'num_columns'] = num_columns  # Добавить количество столбцов в словарь данных таблицы
+    #                             table_data['columns'] = []  # Инициализация списка для названий столбцов
+    #
+    #                             # Для каждого столбца получить название
+    #                             for j in range(num_columns):
+    #                                 column_name, ok = QInputDialog.getText(self, 'Input Dialog',
+    #                                                                        f'Введите название столбца {j + 1} для таблицы {table_name}:')
+    #
+    #                                 if ok:
+    #                                     table_data['columns'].append(
+    #                                         column_name)  # Добавить название столбца в список названий столбцов
+    #
+    #                             data.append(table_data)  # Добавить словарь данных таблицы в список данных
+    #
+    #         metadata = [{'table_name': 'Предметы', 'num_columns': 5, 'columns': ['Мебель', 'Бытовая техника', 'Фигня всякая', 'Помещение', 'Тип']}]
+    #         datas = self.generate_empty_records(metadata)
+    #         print(datas)
+    #         #
+    #
+    # def generate_empty_records(self, metadata):
+    #     data = []
+    #     for table in metadata:
+    #         for _ in range(table['num_columns']):
+    #             record = tuple(None for _ in range(len(table['columns'])))
+    #             data.append(record)
+    #     return data
 
+
+# class InputDialog(QDialog):
+#     def __init__(self):
+#         super().__init__()
+#
+#         self.layout = QVBoxLayout(self)
+#
+#         self.db_name_label = QLabel("Название базы данных", self)
+#         self.db_name_input = QLineEdit(self)
+#
+#         self.num_tables_label = QLabel("Количество таблиц", self)
+#         self.num_tables_input = QSpinBox(self)
+#         self.num_tables_input.valueChanged.connect(self.update_tables)
+#
+#         self.tables_inputs = []
+#
+#         self.layout.addWidget(self.db_name_label)
+#         self.layout.addWidget(self.db_name_input)
+#         self.layout.addWidget(self.num_tables_label)
+#         self.layout.addWidget(self.num_tables_input)
+#
+#     def update_tables(self):
+#         num_tables = self.num_tables_input.value()
+#
+#         # Удалить старые поля ввода
+#         for table_input in self.tables_inputs:
+#             self.layout.removeWidget(table_input)
+#             table_input.deleteLater()
+#         self.tables_inputs.clear()
+#
+#         # Добавить новые поля ввода
+#         for i in range(num_tables):
+#             table_input = QLineEdit(self)
+#             self.layout.addWidget(table_input)
+#             self.tables_inputs.append(table_input)
+#
+#     def getText(self):
+#         pass
