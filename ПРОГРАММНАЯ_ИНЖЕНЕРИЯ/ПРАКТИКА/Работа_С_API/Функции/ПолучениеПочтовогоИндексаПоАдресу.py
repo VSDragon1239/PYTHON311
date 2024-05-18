@@ -1,4 +1,4 @@
-from Samples.geocoder import geocode
+from geocoder import geocode
 
 
 def get_address_postal_code(address):

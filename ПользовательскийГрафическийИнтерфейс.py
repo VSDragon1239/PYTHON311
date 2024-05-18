@@ -164,4 +164,7 @@ class TasksInterface(tasksGui, QTasksGui):
             subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/МЭЙН.py"])
         elif labId == 8 and taskId == 1:
             subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/ФайловаяСистема_И_ПопулярныеФорматы_Zip_And_Json/МЭЙН.py"])
+        elif labId == 9 and taskId == 1:
+            subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_API/МЭЙН.py"])
+
 
