@@ -109,24 +109,11 @@ class LabTasksInterface(labTasksGui, QLabTasksGui):
         self.tasksInterfaceInstance.labsInterfaceId = self.labsInterfaceId
         self.tasksInterfaceInstance.TasksInterfaceId = TasksInterfaceId
         self.tasksInterfaceInstance.label.setText("Задача " + str(self.tasksInterfaceInstance.TasksInterfaceId))
-        self.getTaskPlainText(self.labsInterfaceId, TasksInterfaceId)
+        self.tasksInterfaceInstance.plainTextEdit.setPlainText('Задача')
 
         self.tasksInterfaceInstance.disconnectTask()
         self.tasksInterfaceInstance.connectTask()
         self.tasksInterfaceInstance.show()
-
-    def getTaskPlainText(self, labsInterfaceId, TasksInterfaceId):
-        if labsInterfaceId == 6 and TasksInterfaceId == 3:
-            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
-                'Создайте sqlite базу данных, в которой можно хранить информацию об объектах, которые находятся в квартире: название вещи, год покупки, тип (мебель, бытовая техника и т. д.) и помещение, в котором этот объект находится (кухня, гостиная, спальная комната и т. д.). Учтите, что в одной комнате может быть много разных объектов, и к одному типу может принадлежать также несколько объектов. Наполните ее тестовыми данными. \n Примечание: в данной задаче необходимо создать только базу данных sqlite.')
-        elif labsInterfaceId == 5 and TasksInterfaceId == 1:
-            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
-                'Напишите функцию get_result(name), которая принимает на вход имя файла базы данных, по структуре идентичной «films.db», и удаляет все фильмы в жанре комедии из БД.')
-        elif labsInterfaceId == 5 and TasksInterfaceId == 7:
-            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
-                'Напишите функцию get_result(name), которая принимает на вход имя файла базы данных, по структуре идентичной «films.db», и выполняет запрос, обновляющий таблицу с фильмами таким образом, чтобы длина мюзиклов, превышающая 100 минут, стала равна 100.')
-        else:
-            self.tasksInterfaceInstance.plainTextEdit.setPlainText('')
 
     def backEvent(self):
         self.hide()
@@ -164,4 +151,5 @@ class TasksInterface(tasksGui, QTasksGui):
             subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/МЭЙН.py"])
         elif labId == 8 and taskId == 1:
             subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/ФайловаяСистема_И_ПопулярныеФорматы_Zip_And_Json/МЭЙН.py"])
+
 
