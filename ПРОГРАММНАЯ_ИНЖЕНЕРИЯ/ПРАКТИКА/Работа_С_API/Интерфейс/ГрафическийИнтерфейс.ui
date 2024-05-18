@@ -30,7 +30,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Получить данные</string>
+     <string>Получить данные из введённого</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
