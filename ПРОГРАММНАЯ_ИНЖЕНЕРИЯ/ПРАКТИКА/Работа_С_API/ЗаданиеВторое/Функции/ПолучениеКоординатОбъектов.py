@@ -1,4 +1,30 @@
-from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_API.Функции import geocoder
+from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_API.ЗаданиеПервое.Функции import geocoder
+
+
+class CoordsComponentExtractor:
+    def __init__(self, town):
+        self.town = town
+
+    def get_address_coords(self):
+        # Определяется функция get_address_coords, которая принимает строковый параметр address.
+
+        toponym = \
+            geocoder.geocode(self.town)  # Внутри функции вызывается geocode(address), которая ищет указанный адрес и
+        # возвращает результат в формате JSON.
+
+        toponym_address = \
+            toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
+        # Из полученного JSON-документа извлекается полный адрес, который находится в toponym["metaDataProperty"][
+        # "GeocoderMetaData"]["text"].
+        # print("\033[H\033[3J", end="")
+
+        print("Из \"ПолучениеКоординатОбъекта\" - toponym_address   =   ", toponym_address)
+
+        # Координаты центра топонима:
+        # Из JSON-документа извлекаются координаты центра топонима, которые находятся в toponym["Point"]["pos"].
+        # Эти координаты возвращаются из функции.
+        toponym_coordinates = toponym["Point"]["pos"]
+        return toponym_coordinates
 
 
 # Функция для получения координат
@@ -46,27 +72,3 @@ from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_
 # например "Москва, Красная площадь, 1", и с помощью функции geocode
 # из библиотеки geocoder получить его географические координаты (широту и долготу).
 # Затем эти координаты выводятся на экран.
-
-
-class CoordsComponentExtractor:
-    def __init__(self, town):
-        self.town = town
-
-    def get_address_coords(self):
-        # Определяется функция get_address_coords, которая принимает строковый параметр address.
-
-        toponym = \
-            geocoder.geocode(self.town)  # Внутри функции вызывается geocode(address), которая ищет указанный адрес и
-        # возвращает результат в формате JSON.
-
-        toponym_address = \
-            toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
-        # Из полученного JSON-документа извлекается полный адрес, который находится в toponym["metaDataProperty"][
-        # "GeocoderMetaData"]["text"].
-        print(toponym_address)
-
-        # Координаты центра топонима:
-        # Из JSON-документа извлекаются координаты центра топонима, которые находятся в toponym["Point"]["pos"].
-        # Эти координаты возвращаются из функции.
-        toponym_coordinates = toponym["Point"]["pos"]
-        return toponym_coordinates

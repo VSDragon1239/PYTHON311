@@ -1,5 +1,4 @@
 import webbrowser
-from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_API.Функции.geocoder import API_KEY
 
 
 def show_map(location_params, map_type="map"):

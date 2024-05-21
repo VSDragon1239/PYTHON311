@@ -1,3 +1,5 @@
+import time
+
 from PySide6.QtWidgets import QApplication, QVBoxLayout, QPushButton, QFileDialog, QMessageBox
 from PySide6.QtCore import Signal, QObject
 from PySide6.QtUiTools import loadUiType
@@ -15,11 +17,6 @@ mainGui, QMainGui = loadUiType(mainUiPath)
 labsGui, QLabsGui = loadUiType(labsUiPath)
 labTasksGui, QLabTasksGui = loadUiType(labTasksUiPath)
 tasksGui, QTasksGui = loadUiType(tasksUiPath)
-
-
-class Communicate(QObject):
-    updateAddonWindowState = Signal(bool)
-    openAdditionalWindow = Signal(str)
 
 
 class MainInterface(mainGui, QMainGui):
@@ -47,6 +44,7 @@ class LabsInterface(labsGui, QLabsGui):
         self.labTasksInterfaceInstance = LabTasksInterface
 
         self.connectPushButtons()
+        self.checkReadyLab()
 
     def connectPushButtons(self):
         self.pushButton.clicked.connect(lambda: self.activatedQWidgetLabTasksInterface(1))
@@ -63,6 +61,18 @@ class LabsInterface(labsGui, QLabsGui):
         self.pushButton_12.clicked.connect(lambda: self.activatedQWidgetLabTasksInterface(12))
 
         self.pushButton_13.clicked.connect(self.backEvent)
+
+    def checkReadyLab(self):
+        self.pushButton_8.setStyleSheet("""
+                QPushButton:hover {
+                    background-color: rgb(0,155,0);
+                }
+            """)
+        self.pushButton_9.setStyleSheet("""
+                QPushButton:hover {
+                    background-color: rgb(0,155,0);
+                }
+            """)
 
     def backEvent(self):
         self.hide()  # Скрываем окно
@@ -102,18 +112,61 @@ class LabTasksInterface(labTasksGui, QLabTasksGui):
         self.pushButton_12.clicked.connect(lambda: self.activatedQWidgetTasksInterface(12))
         self.pushButton_13.clicked.connect(self.backEvent)
 
+    def checkReadyTask(self, labsInterfaceId):
+        pass
+        # if labsInterfaceId == 2:
+        #     self.pushButton_2.setStyleSheet("""
+        #                     QPushButton:hover {
+        #                         background-color: rgb(0,155,0);
+        #                     }
+        #                     QPushButton:active {
+        #                                     background-color: rgba(0,0,0, 50%);
+        #                                 }
+        #                 """)
+
     def activatedQWidgetTasksInterface(self, TasksInterfaceId):
         print('Проверка задания: ', TasksInterfaceId)
+        self.checkReadyTask(TasksInterfaceId)
         self.hide()
 
         self.tasksInterfaceInstance.labsInterfaceId = self.labsInterfaceId
         self.tasksInterfaceInstance.TasksInterfaceId = TasksInterfaceId
         self.tasksInterfaceInstance.label.setText("Задача " + str(self.tasksInterfaceInstance.TasksInterfaceId))
-        self.tasksInterfaceInstance.plainTextEdit.setPlainText('Задача')
+        self.getTaskPlainText(self.labsInterfaceId, TasksInterfaceId)
 
         self.tasksInterfaceInstance.disconnectTask()
         self.tasksInterfaceInstance.connectTask()
         self.tasksInterfaceInstance.show()
+
+    def getTaskPlainText(self, labsInterfaceId, TasksInterfaceId):
+        if labsInterfaceId == 6 and TasksInterfaceId == 3:
+            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
+                'Создайте sqlite базу данных, в которой можно хранить информацию об объектах, которые находятся в '
+                'квартире: название вещи, год покупки, тип (мебель, бытовая техника и т. д.) и помещение, '
+                'в котором этот объект находится (кухня, гостиная, спальная комната и т. д.). Учтите, что в одной '
+                'комнате может быть много разных объектов, и к одному типу может принадлежать также несколько '
+                'объектов. Наполните ее тестовыми данными. \n Примечание: в данной задаче необходимо создать только '
+                'базу данных sqlite.')
+        elif labsInterfaceId == 5 and TasksInterfaceId == 1:
+            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
+                'Напишите функцию get_result(name), которая принимает на вход имя файла базы данных, по структуре '
+                'идентичной «films.db», и удаляет все фильмы в жанре комедии из БД.')
+        elif labsInterfaceId == 5 and TasksInterfaceId == 7:
+            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
+                'Напишите функцию get_result(name), которая принимает на вход имя файла базы данных, по структуре '
+                'идентичной «films.db», и выполняет запрос, обновляющий таблицу с фильмами таким образом, чтобы длина '
+                'мюзиклов, превышающая 100 минут, стала равна 100.')
+
+        elif labsInterfaceId == 8 and TasksInterfaceId == 1:
+            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
+                'Много чего связанного с файловой системой и популярными форматами типа JSON и ZIP-архивы ')
+
+        elif labsInterfaceId == 9 and TasksInterfaceId == 1:
+            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
+                'Работа с API с готовым геокодером')
+        else:
+            self.tasksInterfaceInstance.plainTextEdit.setPlainText(
+                'Работа с API с разными геокодерами и другим, надо думать...')
 
     def backEvent(self):
         self.hide()
@@ -150,9 +203,11 @@ class TasksInterface(tasksGui, QTasksGui):
         elif labId == 6 and taskId == 3:
             subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_БазойДанныхSQLite/МЭЙН.py"])
         elif labId == 8 and taskId == 1:
-            subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/ФайловаяСистема_И_ПопулярныеФорматы_Zip_And_Json/МЭЙН.py"])
+            subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/ФайловаяСистема_И_"
+                                              "ПопулярныеФорматы_Zip_And_Json/МЭЙН.py"])
         elif labId == 9 and taskId == 1:
-            subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_API/МЭЙН.py"])
-
+            subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_API/ЗаданиеПервое/МЭЙН.py"])
+        elif labId == 9 and taskId == 2:
+            subprocess.Popen([sys.executable, "ПРОГРАММНАЯ_ИНЖЕНЕРИЯ/ПРАКТИКА/Работа_С_API/ЗаданиеВторое/МЭЙН.py"])
 
 

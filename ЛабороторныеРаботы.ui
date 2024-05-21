@@ -127,7 +127,7 @@ QPushButton:pressed {
          <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text">
-         <string>ЛАБОРОТОРНЫЕ РАБОТЫ</string>
+         <string>ЛАБОРАТОРНЫЕ РАБОТЫ</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
@@ -144,7 +144,7 @@ QPushButton:pressed {
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>319</width>
+           <width>251</width>
            <height>114</height>
           </rect>
          </property>

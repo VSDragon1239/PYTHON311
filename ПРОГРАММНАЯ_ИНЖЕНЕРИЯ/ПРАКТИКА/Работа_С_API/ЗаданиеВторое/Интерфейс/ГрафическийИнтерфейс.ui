@@ -30,7 +30,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Получить данные из введённого</string>
+     <string>Получить данные из введённого адреса</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -56,7 +56,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Чита, ул. Баргузинская, 49а</string>
+     <string>г. Чита, ул. Баргузинская, 49а</string>
     </property>
    </widget>
    <widget class="QPlainTextEdit" name="plainTextEdit">
@@ -73,13 +73,39 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>500</y>
+      <y>510</y>
       <width>761</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Посмотреть выбранное место на статической карте</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>480</y>
+      <width>221</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Спутниковый снимок?</string>
+    </property>
+   </widget>
+   <widget class="QCommandLinkButton" name="commandLinkButton_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>550</y>
+      <width>761</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Открыть выбранное место как картинку с карты</string>
     </property>
    </widget>
   </widget>

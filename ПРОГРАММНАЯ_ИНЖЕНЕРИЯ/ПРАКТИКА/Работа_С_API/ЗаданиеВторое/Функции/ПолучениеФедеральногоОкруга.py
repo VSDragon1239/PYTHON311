@@ -1,7 +1,7 @@
-from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_API.Функции import geocoder
+from ПРОГРАММНАЯ_ИНЖЕНЕРИЯ.ПРАКТИКА.Работа_С_API.ЗаданиеПервое.Функции import geocoder
 
 
-class AddressComponentExtractor:
+class getFederal:
     def __init__(self, town):
         self.town = town
 
@@ -13,3 +13,6 @@ class AddressComponentExtractor:
         components = toponym["metaDataProperty"]["GeocoderMetaData"]["Address"]["Components"]
         # Извлекаем из него запрошенный компонент (Страна, Округ, Область, Район, Город и т.д.) и его название.
         return components[component_index]["name"]
+
+
+
